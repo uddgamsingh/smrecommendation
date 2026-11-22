@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://YOUR-GATEWAY-HOST; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="no-referrer">
+<title>NiveshLens - AI stock analysis for Indian markets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">N</span><div><b>NiveshLens</b><small>AI research for Indian equities</small></div></div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="analyze" class="on">Analyze</button>
+    <button data-tab="picks">Top Picks</button>
+    <button data-tab="market">Market</button>
+  </nav>
+  <div class="status" id="mstatus"><span class="dot"></span><span id="mstatusText">...</span></div>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<main>
+  <!-- ANALYZE -->
+  <section id="tab-analyze" class="tab on">
+    <div class="searchrow">
+      <div class="search">
+        <input id="q" type="text" placeholder="Search NSE stock - e.g. Reliance, TCS, HDFCBANK, or any symbol" autocomplete="off" spellcheck="false">
+        <button id="go">Analyze</button>
+        <ul id="suggest" class="suggest" hidden></ul>
+      </div>
+      <div class="seg" id="hz">
+        <button data-h="" class="on" title="Model picks the best-fit horizon">Auto</button>
+        <button data-h="short">1-5 days</button>
+        <button data-h="swing">2-6 wks</button>
+        <button data-h="positional">3-6 mths</button>
+        <button data-h="long">1-3 yrs</button>
+      </div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div id="result"><div class="empty"><h2>Pick a stock to get a full read.</h2>
+      <p>Technicals, fundamentals, news sentiment, global cues and risk are scored together, then turned into a time-bound plan: when to buy, where to exit, what to expect.</p></div></div>
+  </section>
+
+  <!-- PICKS -->
+  <section id="tab-picks" class="tab">
+    <div class="sectionhead"><h2>Top picks across large-caps</h2><p id="picksMeta">Ranked by composite score; only setups with risk-reward of at least 1.2 are listed as buys.</p></div>
+    <div id="picks"><div class="loading">Scanning universe...</div></div>
+  </section>
+
+  <!-- MARKET -->
+  <section id="tab-market" class="tab">
+    <div class="sectionhead"><h2>Market dashboard</h2><p id="marketMeta"></p></div>
+    <div id="market"><div class="loading">Loading...</div></div>
+  </section>
+</main>
+
+<footer>
+  <p><b>Not investment advice.</b> NiveshLens is an educational, rule-based research tool and is not registered with SEBI as an investment adviser or research analyst. Scores and levels are model outputs, not guarantees. Equity markets involve risk of loss; consult a SEBI-registered adviser before acting.</p>
+</footer>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
