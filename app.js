@@ -14,7 +14,7 @@ let state = { horizon: "", symbol: null, last: null };
 async function api(path) {
   const r = await fetch((window.NIVESH_API_BASE || "") + path, { credentials: "omit", referrerPolicy: "no-referrer" });
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.detail || j.error || r.statusText);
+  if (!r.ok) { const e = new Error(j.detail || j.error || r.statusText); e.status = r.status; throw e; }
   return j;
 }
 
@@ -87,7 +87,7 @@ async function analyze(sym, horizon) {
     history.replaceState(null, '', '#/' + encodeURIComponent(sym));
     render(d);
   } catch (e) {
-    $("#result").innerHTML = `<div class="err"><b>Couldn't analyse ${esc(sym)}.</b> ${esc(e.message)}<br><span class="mute">Check the NSE symbol (e.g. M&amp;M, BAJAJ-AUTO) and try again.</span></div>`;
+    $("#result").innerHTML = `<div class="err"><b>Couldn't analyse ${esc(sym)}.</b> ${esc(e.message)}<br><span class="mute">${e.status === 404 ? "Check the NSE symbol (e.g. M&amp;M, BAJAJ-AUTO) and try again." : "No data was invented to fill the gap. Please retry shortly."}</span></div>`;
   }
 }
 
@@ -100,7 +100,12 @@ function ring(score) {
 
 function render(d) {
   const p = d.plan, q = d.data_quality;
-  const warn = q.live ? "" : `<div class="err" style="background:#2a2010;border-color:#6b4d12;color:#ffd98a;margin-bottom:18px"><b>Sample data in use.</b> Live ${["prices", "fundamentals", "news", "macro"].filter((k) => q[k] !== "live").join(", ")} could not be fetched, so some or all inputs are synthetic. Do not trade on this output.</div>`;
+  const box = (c, t) => `<div class="err" style="background:#2a2010;border-color:#6b4d12;color:#ffd98a;margin-bottom:18px">${t}</div>`;
+  const warn = q.synthetic
+    ? box("", `<b>Sample data in use.</b> Some inputs are synthetic. Do not trade on this output.`)
+    : (q.missing && q.missing.length)
+      ? box("", `<b>Live data partly unavailable:</b> ${q.missing.map(esc).join(", ")} could not be fetched right now, so they were left out and the score uses only real data that was available (weights re-balanced, confidence lowered). Retry in a minute.`)
+      : "";
   const isLong = p.direction === "long", isAvoid = p.direction === "avoid";
   const lvl = (lab, v, pct, c = "") => `<div class="lv ${c}"><div class="label">${lab}</div><div class="v">${inr(v)}</div>${pct != null ? `<div class="p ${cls(pct)}">${sgn(pct, 1)}%</div>` : ""}</div>`;
   const planTitle = isLong ? "Trade plan" : isAvoid ? "Exit / avoid levels" : "Conditional plan (neutral view)";
